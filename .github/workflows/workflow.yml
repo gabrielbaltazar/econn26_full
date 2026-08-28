@@ -15,15 +15,11 @@ jobs:
       - name: BaixarCodigo
         uses: actions/checkout@v4
 
-      - name: Configurar Delphi
-        shell: cmd
-        run: |
-          call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat"
-
       - name: Build Projeto de Teste
         shell: cmd
         working-directory: .\Tests
         run: |
+          call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat"
           msbuild EConn2026_Test.dproj /p:Config=Release /t:Build /p:DCC_ExeOutput=%GITHUB_WORKSPACE%\Bin\Test
 
       - name: Build Projeto Principal
