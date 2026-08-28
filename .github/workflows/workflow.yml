@@ -22,8 +22,14 @@ jobs:
           call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat"
           msbuild EConn2026_Test.dproj /p:Config=Release /t:Build /p:DCC_ExeOutput=%GITHUB_WORKSPACE%\Bin\Test
 
+      - name: Execute Testes unitarios
+        shell: cmd
+        run: |
+          %GITHUB_WORKSPACE%\Bin\Test\EConn2026_Test.exe
+
       - name: Build Projeto Principal
         shell: cmd
         working-directory: .\Fontes
         run: |
+          call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat"
           msbuild EConn2026.dproj /p:Config=Release /t:Build /p:DCC_ExeOutput=%GITHUB_WORKSPACE%\Bin 
