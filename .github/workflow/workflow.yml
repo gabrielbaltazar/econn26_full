@@ -4,7 +4,8 @@ name: Integracao continua
 on: 
   push:
     branches:
-      ['develop', 'master']
+      - develop
+      - master
 
 jobs: 
   integracao:
