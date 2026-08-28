@@ -17,6 +17,11 @@ jobs:
       - name: BaixarCodigo
         uses: actions/checkout@v4
 
+      - name: Mark workspace as safe
+        shell: powershell
+        run: |
+          git config --global --add safe.directory "$env:GITHUB_WORKSPACE"
+
       - name: Configurar Delphi
         shell: cmd
         run: |
