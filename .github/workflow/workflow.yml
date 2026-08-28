@@ -29,9 +29,9 @@ jobs:
 
       - name: Build Projeto de Teste
         shell: cmd
-        working-directory: .\Tests
+        working-directory: Tests
         run: |
-          msbuild EConn2026_Test.dproj /p:Config=Release /t:Build /p:DCC_ExeOutput=%GITHUB_WORKSPACE%\Bin\Test
+          msbuild EConn2026_Test.dproj /p:Config=Release /t:Build /p:DCC_ExeOutput=%GITHUB_WORKSPACE%\Bin\Tests
 
       - name: Build Projeto Principal
         shell: cmd
