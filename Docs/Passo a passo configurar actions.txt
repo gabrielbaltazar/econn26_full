@@ -1,0 +1,6 @@
+1) criar pasta .github/workflows
+2) criar o arquivo workflow.yaml. Pode ser qualquer nome com extensão .yaml
+
+
+Self Hosted Windows com Delphi instalado
+Configuração do runner.

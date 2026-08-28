@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{8D93B9A1-63B5-4B39-A95C-3AE634A150DA}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="EConn2026.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\Tests\EConn2026_Test.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="EConn2026">
+        <MSBuild Projects="EConn2026.dproj"/>
+    </Target>
+    <Target Name="EConn2026:Clean">
+        <MSBuild Projects="EConn2026.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EConn2026:Make">
+        <MSBuild Projects="EConn2026.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="EConn2026_Test">
+        <MSBuild Projects="..\Tests\EConn2026_Test.dproj"/>
+    </Target>
+    <Target Name="EConn2026_Test:Clean">
+        <MSBuild Projects="..\Tests\EConn2026_Test.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="EConn2026_Test:Make">
+        <MSBuild Projects="..\Tests\EConn2026_Test.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="EConn2026;EConn2026_Test"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="EConn2026:Clean;EConn2026_Test:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="EConn2026:Make;EConn2026_Test:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
