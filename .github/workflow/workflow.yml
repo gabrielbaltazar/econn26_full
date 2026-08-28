@@ -2,10 +2,6 @@ name: Integracao continua
 
 ## Evento que dispara o workflow
 on: 
-  pull_request:
-    branches:
-      ['develop', 'master']
-
   push:
     branches:
       ['develop', 'master']
