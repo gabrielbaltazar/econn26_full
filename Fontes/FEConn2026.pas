@@ -27,7 +27,7 @@ implementation
 
 function TForm1.Soma(const ANum1, ANum2: Integer): Integer;
 begin
-  Result := ANum1 + ANum2 + 1;
+  Result := ANum1 + ANum2 + 2;
 end;
 
 end.
