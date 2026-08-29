@@ -28,6 +28,8 @@ implementation
 function TForm1.Soma(const ANum1, ANum2: Integer): Integer;
 begin
   Result := ANum1 + ANum2;
+  // Cadastro de fornecedor
+  // Cadastro de cliente
 end;
 
 end.

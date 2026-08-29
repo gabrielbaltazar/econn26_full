@@ -38,3 +38,10 @@ jobs:
         run: |
           call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat"
           msbuild EConn2026.dproj /p:Config=Release /t:Build /p:DCC_ExeOutput=%GITHUB_WORKSPACE%\Bin 
+
+      - name: Criar Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Versão ${{ env.VERSION }}
+          body_path: ReleaseNotes.md
