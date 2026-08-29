@@ -21,8 +21,5 @@ object Form1: TForm1
     BevelOuter = bvNone
     Caption = 'Embarcadero Conference'
     TabOrder = 0
-    ExplicitLeft = 232
-    ExplicitTop = 224
-    ExplicitWidth = 185
   end
 end
