@@ -7,6 +7,11 @@ on:
       - develop
       - master
 
+  pull_request:
+    branches:
+      - develop
+      - master
+
 jobs: 
   integracao:
     runs-on: self-hosted     
