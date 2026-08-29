@@ -1,0 +1,50 @@
+name: Entrega continua - CD
+
+on:
+    pull_request:
+        types:
+            - closed
+        branches:
+            - master
+
+jobs:
+    econn2026-cd:
+        if: github.event.pull_request.merged == true
+        runs-on: self-hosted
+        
+        steps:
+            - name: BaixarCodigo
+              uses: actions/checkout@v4
+              with:
+                fetch-depth: 0
+        
+            - name: Calcular versão
+              id: version
+              shell: pwsh
+              run: |
+                git fetch --tags
+
+                $prefix = Get-Date -Format "yy.MM"
+
+                $last = git tag --list "$prefix.*" |
+                        Sort-Object |
+                        Select-Object -Last 1
+
+                if ($last)
+                {
+                    $build = [int]($last.Split('.')[-1]) + 1
+                }
+                else
+                {
+                    $build = 1
+                }
+
+                $version = "{0}.{1:D2}" -f $prefix,$build
+
+                echo "VERSION=$version" >> $env:GITHUB_ENV
+                echo "version=$version" >> $env:GITHUB_OUTPUT
+
+            - name: Criar Tag
+              run: |
+                git tag ${{ env.VERSION }}
+                git push origin ${{ env.VERSION }}
