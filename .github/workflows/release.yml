@@ -20,7 +20,7 @@ jobs:
         
             - name: Calcular versão
               id: version
-              shell: pwsh
+              shell: powershell
               run: |
                 git fetch --tags
 
