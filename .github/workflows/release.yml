@@ -46,14 +46,76 @@ jobs:
                 echo "VERSION=$version" >> $env:GITHUB_ENV
                 echo "version=$version" >> $env:GITHUB_OUTPUT
 
+            - name: Criar/Atualizar CHANGELOG
+              shell: powershell
+              run: |
+
+                $version = "${{ env.VERSION }}"
+                $date = Get-Date -Format "yyyy-MM-dd"
+
+                #
+                # Cria o arquivo caso não exista
+                #
+                if (!(Test-Path CHANGELOG.md))
+                {
+                    @"
+                    # Changelog
+
+                    Todas as alterações relevantes deste projeto serão documentadas neste arquivo.
+
+                    ---
+
+                    "@ | Out-File CHANGELOG.md -Encoding UTF8
+                }
+
+
+                #
+                # Busca informações do Pull Request
+                #
+                $prNumber = "${{ github.event.pull_request.number }}"
+                $prTitle = "${{ github.event.pull_request.title }}"
+                $prAuthor = "${{ github.event.pull_request.user.login }}"
+
+
+                #
+                # Monta nova versão
+                #
+                $newEntry = @"
+
+                    ## [$version] - $date
+
+                    ### Pull Requests
+
+                    - #$prNumber - $prTitle (@$prAuthor)
+
+                    ---
+
+                    "@
+
+
+                    #
+                    # Insere a versão depois do cabeçalho
+                    #
+                    $content = Get-Content CHANGELOG.md -Raw
+
+                    $content = $content -replace "(# Changelog.*?\r?\n\r?\n)", "`$1$newEntry"
+
+                    Set-Content CHANGELOG.md $content -Encoding UTF8
+
+            - name: Commit CHANGELOG
+              shell: powershell
+              run: |
+
+                git config user.name "github-actions[bot]"
+                git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+                git add CHANGELOG.md
+
+                git commit -m "docs: atualiza changelog ${{ env.VERSION }}"
+
+                git push origin master
+
             - name: Criar Tag
               run: |
                 git tag ${{ env.VERSION }}
                 git push origin ${{ env.VERSION }}
-
-            - name: Criar Release
-              uses: softprops/action-gh-release@v2
-              with:
-                tag_name: ${{ env.VERSION }}
-                name: Versão ${{ env.VERSION }}
-                body_path: ReleaseNotes.md
