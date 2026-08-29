@@ -11,6 +11,8 @@ jobs:
     econn2026-cd:
         if: github.event.pull_request.merged == true
         runs-on: self-hosted
+        permissions:
+            contents: write
         
         steps:
             - name: BaixarCodigo
