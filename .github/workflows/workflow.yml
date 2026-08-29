@@ -1,4 +1,4 @@
-name: Integracao continua
+name: Integracao continua - CI
 
 ## Evento que dispara o workflow
 on: 
