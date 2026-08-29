@@ -13,6 +13,7 @@ jobs:
         runs-on: self-hosted
         permissions:
             contents: write
+            pull-requests: read
         
         steps:
             - name: BaixarCodigo
@@ -46,6 +47,65 @@ jobs:
                 echo "VERSION=$version" >> $env:GITHUB_ENV
                 echo "version=$version" >> $env:GITHUB_OUTPUT
 
+            - name: Buscar Pull Requests mescladas
+              id: prs
+              shell: powershell
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                CURRENT_PR_NUMBER: ${{ github.event.pull_request.number }}
+                CURRENT_PR_TITLE: ${{ github.event.pull_request.title }}
+                CURRENT_PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+                CURRENT_PR_MERGED_AT: ${{ github.event.pull_request.merged_at }}
+              run: |
+                [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
+                $headers = @{
+                    Authorization = "Bearer $env:GH_TOKEN"
+                    Accept        = "application/vnd.github+json"
+                    "User-Agent"  = "econn2026-release-workflow"
+                }
+
+                #
+                # Ponto de corte: data da última tag de release (formato yy.MM.NN, ordenável como texto)
+                #
+                $lastTag = git tag --list "*.*.*" | Sort-Object | Select-Object -Last 1
+                $cutoff = $null
+                if ($lastTag)
+                {
+                    $cutoff = Get-Date (git log -1 --format=%cI $lastTag)
+                }
+
+                #
+                # Busca as PRs fechadas mais recentes na master (assume menos de 100 fechadas entre releases)
+                #
+                $uri = "https://api.github.com/repos/${{ github.repository }}/pulls?state=closed&base=master&sort=updated&direction=desc&per_page=100"
+                $closedPRs = Invoke-RestMethod -Uri $uri -Headers $headers
+
+                $mergedPRs = @($closedPRs | Where-Object {
+                    $_.merged_at -and (-not $cutoff -or (Get-Date $_.merged_at) -gt $cutoff)
+                })
+
+                #
+                # Garante que a PR que disparou este merge sempre apareça, mesmo se a API ainda não a listar
+                #
+                $currentNumber = [int]$env:CURRENT_PR_NUMBER
+                if (-not ($mergedPRs | Where-Object { $_.number -eq $currentNumber }))
+                {
+                    $mergedPRs = @([PSCustomObject]@{
+                        number    = $currentNumber
+                        title     = $env:CURRENT_PR_TITLE
+                        merged_at = $env:CURRENT_PR_MERGED_AT
+                        user      = [PSCustomObject]@{ login = $env:CURRENT_PR_AUTHOR }
+                    }) + $mergedPRs
+                }
+
+                $mergedPRs = @($mergedPRs | Sort-Object merged_at)
+
+                $prsPath = Join-Path $env:RUNNER_TEMP "merged_prs.json"
+                ConvertTo-Json -InputObject $mergedPRs -Depth 5 | Out-File $prsPath -Encoding utf8
+
+                echo "PRS_PATH=$prsPath" >> $env:GITHUB_ENV
+
             - name: Criar/Atualizar CHANGELOG
               shell: powershell
               run: |
@@ -67,14 +127,12 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 '@ | Out-File CHANGELOG.md -Encoding UTF8
                 }
 
-
                 #
-                # Busca informações do Pull Request
+                # Monta a lista de Pull Requests mescladas encontradas pelo step anterior
                 #
-                $prNumber = "${{ github.event.pull_request.number }}"
-                $prTitle = "${{ github.event.pull_request.title }}"
-                $prAuthor = "${{ github.event.pull_request.user.login }}"
-
+                $mergedPRs = @(Get-Content $env:PRS_PATH -Raw | ConvertFrom-Json)
+                $prLines = foreach ($pr in $mergedPRs) { "- #$($pr.number) - $($pr.title) (@$($pr.user.login))" }
+                $prBlock = $prLines -join "`n"
 
                 #
                 # Monta nova versão
@@ -85,12 +143,11 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
 
 ### Pull Requests
 
-- #$prNumber - $prTitle (@$prAuthor)
+$prBlock
 
 ---
 
 "@
-
 
                 #
                 # Insere a versão depois do cabeçalho
@@ -104,7 +161,6 @@ Todas as alterações relevantes deste projeto serão documentadas neste arquivo
             - name: Commit CHANGELOG
               shell: powershell
               run: |
-
                 git config user.name "github-actions[bot]"
                 git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
