@@ -49,7 +49,6 @@ jobs:
             - name: Criar/Atualizar CHANGELOG
               shell: powershell
               run: |
-
                 $version = "${{ env.VERSION }}"
                 $date = Get-Date -Format "yyyy-MM-dd"
 
@@ -58,14 +57,14 @@ jobs:
                 #
                 if (!(Test-Path CHANGELOG.md))
                 {
-                    @"
-                    # Changelog
+                  @'
+# Changelog
 
-                    Todas as alterações relevantes deste projeto serão documentadas neste arquivo.
+Todas as alterações relevantes deste projeto serão documentadas neste arquivo.
 
-                    ---
+---
 
-                    "@ | Out-File CHANGELOG.md -Encoding UTF8
+'@ | Out-File CHANGELOG.md -Encoding UTF8
                 }
 
 
@@ -82,25 +81,25 @@ jobs:
                 #
                 $newEntry = @"
 
-                    ## [$version] - $date
+## [$version] - $date
 
-                    ### Pull Requests
+### Pull Requests
 
-                    - #$prNumber - $prTitle (@$prAuthor)
+- #$prNumber - $prTitle (@$prAuthor)
 
-                    ---
+---
 
-                    "@
+"@
 
 
-                    #
-                    # Insere a versão depois do cabeçalho
-                    #
-                    $content = Get-Content CHANGELOG.md -Raw
+                #
+                # Insere a versão depois do cabeçalho
+                #
+                $content = Get-Content CHANGELOG.md -Raw
 
-                    $content = $content -replace "(# Changelog.*?\r?\n\r?\n)", "`$1$newEntry"
+                $content = $content -replace "(# Changelog.*?\r?\n\r?\n)", "`$1$newEntry"
 
-                    Set-Content CHANGELOG.md $content -Encoding UTF8
+                Set-Content CHANGELOG.md $content -Encoding UTF8
 
             - name: Commit CHANGELOG
               shell: powershell
