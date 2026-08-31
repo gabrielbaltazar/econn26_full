@@ -28,7 +28,7 @@ begin
 {$IFDEF TESTINSIGHT}
   TestInsight.DUnitX.RunRegisteredTests;
 {$ELSE}
-  try       ,
+  try
     //Check command line options, will exit if invalid
     TDUnitX.CheckCommandLine;
     //Create the test runner
