@@ -22,11 +22,11 @@ var
   runner: ITestRunner;
   results: IRunResults;
   logger: ITestLogger;
-  nunitLogger : ITestLogger;
+  nunitLogger : ITestLogger;   //
 {$ENDIF}
 begin
 {$IFDEF TESTINSIGHT}
-  TestInsight.DUnitX.RunRegisteredTests; //
+  TestInsight.DUnitX.RunRegisteredTests;
 {$ELSE}
   try
     //Check command line options, will exit if invalid
