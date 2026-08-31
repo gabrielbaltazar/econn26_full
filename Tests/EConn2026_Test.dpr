@@ -26,7 +26,7 @@ var
 {$ENDIF}
 begin
 {$IFDEF TESTINSIGHT}
-  TestInsight.DUnitX.RunRegisteredTests; //
+  TestInsight.DUnitX.RunRegisteredTests;
 {$ELSE}
   try
     //Check command line options, will exit if invalid
