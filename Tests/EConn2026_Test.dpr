@@ -22,7 +22,7 @@ var
   runner: ITestRunner;
   results: IRunResults;
   logger: ITestLogger;
-  nunitLogger : ITestLogger;
+  nunitLogger : ITestLogger;   //
 {$ENDIF}
 begin
 {$IFDEF TESTINSIGHT}
